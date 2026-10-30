@@ -143,8 +143,9 @@ ul{list-style:none}
 .nav-links{display:flex;align-items:center;gap:28px;font-size:.78rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase}
 .nav-links a{color:var(--mid);transition:color .2s}
 .nav-links a:hover{color:var(--gold)}
-.nav-cta{background:var(--gold);color:#fff!important;padding:9px 22px;border-radius:2px;font-size:.75rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;transition:background .2s}
-.nav-cta:hover{background:var(--gold-light)!important;color:#fff!important}
+/* CTA isolata a destra — stile VerdeMare: bottone pieno, testo bianco, leggibilità immediata */
+.nav-cta{background:var(--gold);color:#fff!important;padding:10px 22px;border-radius:4px;font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;transition:background .2s;white-space:nowrap}
+.nav-cta:hover{background:#a07828!important;color:#fff!important}
 .nav-burger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
 .nav-burger span{display:block;width:24px;height:2px;background:var(--ink);border-radius:2px}
 
@@ -353,16 +354,17 @@ ul{list-style:none}
     </a>
     <ul class="nav-links" id="navLinks">
       <li><a href="#intro">Home</a></li>
-      <li><a href="#prenota" class="nav-cta" data-it="Richiedi disponibilità" data-en="Check availability" data-de="Verfügbarkeit prüfen">Richiedi disponibilità</a></li>
       <li><a href="#gallery">Gallery</a></li>
       <li><a href="#location" data-it="Dintorni" data-en="Area" data-de="Umgebung">Dintorni</a></li>
       <li><a href="#servizi" data-it="Servizi" data-en="Amenities" data-de="Ausstattung">Servizi</a></li>
       <li><a href="#monica" data-it="Contatti" data-en="Contact" data-de="Kontakt">Contatti</a></li>
     </ul>
-    <div id="langSwitcher" style="display:flex;gap:4px;margin-left:10px;">
-      <button onclick="setLang('it')" id="btn-it" title="Italiano" style="background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:var(--sans);font-size:.75rem;font-weight:700;letter-spacing:.08em;padding:4px 10px;border-radius:20px;cursor:pointer;transition:all .2s;">🇮🇹 IT</button>
-      <button onclick="setLang('en')" id="btn-en" title="English"  style="background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:var(--sans);font-size:.75rem;font-weight:700;letter-spacing:.08em;padding:4px 10px;border-radius:20px;cursor:pointer;transition:all .2s;">🇬🇧 EN</button>
-      <button onclick="setLang('de')" id="btn-de" title="Deutsch"  style="background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:var(--sans);font-size:.75rem;font-weight:700;letter-spacing:.08em;padding:4px 10px;border-radius:20px;cursor:pointer;transition:all .2s;">🇩🇪 DE</button>
+    <!-- CTA isolata come su VerdeMare: bottone pieno tra i link e i selettori lingua -->
+    <a href="#prenota" class="nav-cta" data-it="Richiedi disponibilità" data-en="Check availability" data-de="Verfügbarkeit prüfen">Richiedi disponibilità</a>
+    <div id="langSwitcher" style="display:flex;gap:2px;margin-left:14px;">
+      <button onclick="setLang('it')" id="btn-it" title="Italiano" style="background:transparent;border:none;color:var(--mid);font-family:var(--sans);font-size:.78rem;font-weight:600;letter-spacing:.06em;padding:6px 10px;border-radius:4px;cursor:pointer;transition:color .2s;">IT</button>
+      <button onclick="setLang('en')" id="btn-en" title="English"  style="background:transparent;border:none;color:var(--mid);font-family:var(--sans);font-size:.78rem;font-weight:600;letter-spacing:.06em;padding:6px 10px;border-radius:4px;cursor:pointer;transition:color .2s;">EN</button>
+      <button onclick="setLang('de')" id="btn-de" title="Deutsch"  style="background:transparent;border:none;color:var(--mid);font-family:var(--sans);font-size:.78rem;font-weight:600;letter-spacing:.06em;padding:6px 10px;border-radius:4px;cursor:pointer;transition:color .2s;">DE</button>
     </div>
     <button class="nav-burger" id="navBurger" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -918,11 +920,11 @@ function setLang(lang) {
     const btn = document.getElementById('btn-' + l);
     if (!btn) return;
     if (l === lang) {
-      btn.style.background = 'var(--gold)';
-      btn.style.color = '#fff';
-    } else {
-      btn.style.background = 'transparent';
       btn.style.color = 'var(--gold)';
+      btn.style.fontWeight = '700';
+    } else {
+      btn.style.color = 'var(--mid)';
+      btn.style.fontWeight = '600';
     }
   });
   applyLang(lang);
