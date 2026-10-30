@@ -4,6 +4,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Google Analytics GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C9J7R72R4Y"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-C9J7R72R4Y');
+</script>
 <meta name="google-site-verification" content="tfzGUggQvecIP7CeufbpiJVnE0sjbRzgXU9gMQ">
 <meta name="google-site-verification" content="n4Egrp4r1RhdpCJN0RPFSu5sNM9gjUOwqisLNwt2iY0">
 <title>Ricky's Luxury Apartment – Appartamento Vacanze Misano Adriatico | Riviera Romagnola</title>
@@ -41,12 +49,6 @@
     "@type": "GeoCoordinates",
     "latitude": 43.9716,
     "longitude": 12.6939
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "10",
-    "bestRating": "10",
-    "ratingCount": "6"
   },
   "numberOfRooms": 2,
   "amenityFeature": [
@@ -325,7 +327,7 @@ ul{list-style:none}
 
 <section id="hero">
   <div class="hero-photo-wrap">
-    <img class="hero-photo" src="images/img01.jpg" loading="lazy" alt="Soggiorno Ricky's Luxury Apartment">
+    <img class="hero-photo" src="images/img01.jpg" loading="eager" fetchpriority="high" alt="Soggiorno Ricky's Luxury Apartment">
     <div class="hero-overlay"></div>
     <div class="hero-text-wrap">
       <h1 class="slide-title">Ricky's Luxury Apartment<br><em>Vivi un soggiorno esclusivo</em></h1>
@@ -679,29 +681,29 @@ ul{list-style:none}
       </h2>
     </div>
     <div class="gallery-grid">
-      <div class="gallery-item"><img src="images/img03.jpg" loading="lazy" alt="Camera matrimoniale" loading="lazy"><div class="gallery-label">Camera matrimoniale</div></div>
-      <div class="gallery-item"><img src="images/img04.jpg" loading="lazy" alt="Camera matrimoniale" loading="lazy"><div class="gallery-label">Camera matrimoniale</div></div>
-      <div class="gallery-item"><img src="images/img05.jpg" loading="lazy" alt="Bagno privato en suite" loading="lazy"><div class="gallery-label">Bagno privato en suite</div></div>
-      <div class="gallery-item"><img src="images/img06.jpg" loading="lazy" alt="Bagno privato en suite" loading="lazy"><div class="gallery-label">Bagno privato en suite</div></div>
+      <div class="gallery-item"><img src="images/img03.jpg" loading="lazy" alt="Camera matrimoniale" ><div class="gallery-label">Camera matrimoniale</div></div>
+      <div class="gallery-item"><img src="images/img04.jpg" loading="lazy" alt="Camera matrimoniale" ><div class="gallery-label">Camera matrimoniale</div></div>
+      <div class="gallery-item"><img src="images/img05.jpg" loading="lazy" alt="Bagno privato en suite" ><div class="gallery-label">Bagno privato en suite</div></div>
+      <div class="gallery-item"><img src="images/img06.jpg" loading="lazy" alt="Bagno privato en suite" ><div class="gallery-label">Bagno privato en suite</div></div>
     
-      <div class="gallery-item"><img src="images/img07.jpg" loading="lazy" alt="Seconda camera matrimoniale" loading="lazy"><div class="gallery-label">Seconda camera matrimoniale</div></div>
-      <div class="gallery-item"><img src="images/img08.jpg" loading="lazy" alt="Seconda camera matrimoniale" loading="lazy"><div class="gallery-label">Seconda camera matrimoniale</div></div>
+      <div class="gallery-item"><img src="images/img07.jpg" loading="lazy" alt="Seconda camera matrimoniale" ><div class="gallery-label">Seconda camera matrimoniale</div></div>
+      <div class="gallery-item"><img src="images/img08.jpg" loading="lazy" alt="Seconda camera matrimoniale" ><div class="gallery-label">Seconda camera matrimoniale</div></div>
     
-      <div class="gallery-item"><img src="images/img09.jpg" loading="lazy" alt="Secondo bagno" loading="lazy"><div class="gallery-label">Secondo bagno</div></div>
+      <div class="gallery-item"><img src="images/img09.jpg" loading="lazy" alt="Secondo bagno" ><div class="gallery-label">Secondo bagno</div></div>
     
-      <div class="gallery-item"><img src="images/img10.jpg" loading="lazy" alt="Cucina attrezzata" loading="lazy"><div class="gallery-label">Cucina attrezzata</div></div>
-      <div class="gallery-item"><img src="images/img11.jpg" loading="lazy" alt="Cucina attrezzata" loading="lazy"><div class="gallery-label">Cucina attrezzata</div></div>
+      <div class="gallery-item"><img src="images/img10.jpg" loading="lazy" alt="Cucina attrezzata" ><div class="gallery-label">Cucina attrezzata</div></div>
+      <div class="gallery-item"><img src="images/img11.jpg" loading="lazy" alt="Cucina attrezzata" ><div class="gallery-label">Cucina attrezzata</div></div>
     
-      <div class="gallery-item"><img src="images/img12.jpg" loading="lazy" alt="Open Space" loading="lazy"><div class="gallery-label">Open Space</div></div>
-      <div class="gallery-item"><img src="images/img13.jpg" loading="lazy" alt="Salotto e cucina" loading="lazy"><div class="gallery-label">Salotto e cucina</div></div>
+      <div class="gallery-item"><img src="images/img12.jpg" loading="lazy" alt="Open Space" ><div class="gallery-label">Open Space</div></div>
+      <div class="gallery-item"><img src="images/img13.jpg" loading="lazy" alt="Salotto e cucina" ><div class="gallery-label">Salotto e cucina</div></div>
     
-    <div class="gallery-item"><img src="images/img14.jpg" loading="lazy" alt="Zona pranzo" loading="lazy"><div class="gallery-label">Zona pranzo</div></div>
-    <div class="gallery-item"><img src="images/img15.jpg" loading="lazy" alt="Zona pranzo con accesso al balcone" loading="lazy"><div class="gallery-label">Zona pranzo con accesso al balcone</div></div>
+    <div class="gallery-item"><img src="images/img14.jpg" loading="lazy" alt="Zona pranzo" ><div class="gallery-label">Zona pranzo</div></div>
+    <div class="gallery-item"><img src="images/img15.jpg" loading="lazy" alt="Zona pranzo con accesso al balcone" ><div class="gallery-label">Zona pranzo con accesso al balcone</div></div>
     
-    <div class="gallery-item"><img src="images/img16.jpg" loading="lazy" alt="Terrazzo" loading="lazy"><div class="gallery-label">Terrazzo</div></div>
+    <div class="gallery-item"><img src="images/img16.jpg" loading="lazy" alt="Terrazzo" ><div class="gallery-label">Terrazzo</div></div>
     
-    <div class="gallery-item"><img src="images/img17.jpg" loading="lazy" alt="Terrazzo" loading="lazy"><div class="gallery-label">Terrazzo</div></div>
-    <div class="gallery-item"><img src="images/img18.jpg" loading="lazy" alt="Esterno" loading="lazy"><div class="gallery-label">Esterno</div></div>
+    <div class="gallery-item"><img src="images/img17.jpg" loading="lazy" alt="Terrazzo" ><div class="gallery-label">Terrazzo</div></div>
+    <div class="gallery-item"><img src="images/img18.jpg" loading="lazy" alt="Esterno" ><div class="gallery-label">Esterno</div></div>
     </div>
   </div>
 </section>
