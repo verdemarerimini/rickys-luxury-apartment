@@ -4,13 +4,58 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Google Analytics GA4 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-C9J7R72R4Y"></script>
+<!-- Google Analytics GA4 — caricato solo dopo consenso esplicito cookie -->
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-C9J7R72R4Y');
+  var GA_ID = 'G-C9J7R72R4Y';
+  // gaScriptInjected: true una volta sola — lo script gtag.js è già nel DOM
+  // gaConsented: riflette il consenso attivo nella sessione corrente
+  var gaScriptInjected = false;
+  var gaConsented = false;
+
+  function loadGA() {
+    // Riabilita la raccolta (rimuove eventuale blocco da revoca precedente)
+    window['ga-disable-' + GA_ID] = false;
+    gaConsented = true;
+
+    if (!gaScriptInjected) {
+      // Prima chiamata: inietta lo script gtag.js una volta sola
+      gaScriptInjected = true;
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function(){ dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+    }
+    // Ogni volta che il consenso viene (ri)dato, invia o aggiorna la config
+    window.gtag('config', GA_ID);
+  }
+
+  function revokeGA() {
+    // Blocca qualsiasi raccolta dati per la sessione corrente
+    window['ga-disable-' + GA_ID] = true;
+    gaConsented = false;
+    // Rimuovi i cookie GA accessibili via JavaScript (_ga, _gid, _ga_XXXXXXXX)
+    var hostname = location.hostname;
+    var rootDomain = hostname.replace(/^www\./, '');
+    var domains = [hostname, '.' + hostname, rootDomain, '.' + rootDomain]
+      .filter(function(d, i, a){ return a.indexOf(d) === i; });
+    document.cookie.split(';').forEach(function(c) {
+      var name = c.trim().split('=')[0];
+      if (/^(_ga|_gid)/.test(name)) {
+        domains.forEach(function(d) {
+          document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=' + d;
+        });
+      }
+    });
+    // Nota: gaScriptInjected rimane true — lo script è già nel DOM,
+    // ma il flag ga-disable impedisce qualsiasi invio di dati a Google.
+  }
+
+  (function(){
+    if(localStorage.getItem('cookie_consent') === 'accepted') { loadGA(); }
+  })();
 </script>
 <meta name="google-site-verification" content="tfzGUggQvecIP7CeufbpiJVnE0sjbRzgXU9gMQ">
 <meta name="google-site-verification" content="n4Egrp4r1RhdpCJN0RPFSu5sNM9gjUOwqisLNwt2iY0">
@@ -308,7 +353,7 @@ ul{list-style:none}
     </a>
     <ul class="nav-links" id="navLinks">
       <li><a href="#intro">Home</a></li>
-      <li><a href="#prenota" class="nav-cta" data-it="Prenota ora" data-en="Book now" data-de="Jetzt buchen">Prenota ora</a></li>
+      <li><a href="#prenota" class="nav-cta" data-it="Richiedi disponibilità" data-en="Check availability" data-de="Verfügbarkeit prüfen">Richiedi disponibilità</a></li>
       <li><a href="#gallery">Gallery</a></li>
       <li><a href="#location" data-it="Dintorni" data-en="Area" data-de="Umgebung">Dintorni</a></li>
       <li><a href="#servizi" data-it="Servizi" data-en="Amenities" data-de="Ausstattung">Servizi</a></li>
@@ -379,7 +424,9 @@ ul{list-style:none}
     <div class="servizi-grid">
       <div class="servizio-col">
         <div class="servizio-col-header"><span class="servizio-icon">🛏️</span><h3 class="servizio-col-title" data-it="Camere e biancheria" data-en="Rooms &amp; linen" data-de="Zimmer &amp; Wäsche">Camere e biancheria</h3></div>
-        <ul>
+        <ul data-it="<li>2 camere da letto</li><li>Letto matrimoniale</li><li>Letto singolo disponibile</li><li>Lettino per neonati su richiesta</li><li>Lenzuola e trapunte</li><li>Coperte e piumini per l'inverno</li><li>Asciugamani</li><li>Asciugacapelli</li>"
+            data-en="<li>2 bedrooms</li><li>Double bed</li><li>Single bed available</li><li>Baby cot on request</li><li>Bed linen and duvets</li><li>Blankets and winter duvets</li><li>Towels</li><li>Hair dryer</li>"
+            data-de="<li>2 Schlafzimmer</li><li>Doppelbett</li><li>Einzelbett verfügbar</li><li>Babybett auf Anfrage</li><li>Bettwäsche und Bettdecken</li><li>Decken und Winterduvets</li><li>Handtücher</li><li>Haartrockner</li>">
           <li>2 camere da letto</li><li>Letto matrimoniale</li><li>Letto singolo disponibile</li>
           <li>Lettino per neonati su richiesta</li><li>Lenzuola e trapunte</li><li>Coperte e piumini per l'inverno</li>
           <li>Asciugamani</li><li>Asciugacapelli</li>
@@ -387,21 +434,27 @@ ul{list-style:none}
       </div>
       <div class="servizio-col">
         <div class="servizio-col-header"><span class="servizio-icon">🚿</span><h3 class="servizio-col-title" data-it="Bagno" data-en="Bathroom" data-de="Badezimmer">Bagno</h3></div>
-        <ul>
+        <ul data-it="<li>Bagno privato</li><li>Doccia spaziosa</li><li>Asciugacapelli</li><li>Kit cortesia</li><li>Ciabatte da bagno</li><li>Specchio grande</li><li>Illuminazione ottimale</li><li>Scaldasciugamani elettrico</li>"
+            data-en="<li>Private bathroom</li><li>Spacious shower</li><li>Hair dryer</li><li>Toiletries kit</li><li>Bath slippers</li><li>Large mirror</li><li>Optimal lighting</li><li>Electric heated towel rail</li>"
+            data-de="<li>Privates Badezimmer</li><li>Geräumige Dusche</li><li>Haartrockner</li><li>Pflegeset</li><li>Badeschlappen</li><li>Großer Spiegel</li><li>Optimale Beleuchtung</li><li>Elektrischer Handtuchheizkörper</li>">
           <li>Bagno privato</li><li>Doccia spaziosa</li><li>Asciugacapelli</li>
           <li>Kit cortesia</li><li>Ciabatte da bagno</li><li>Specchio grande</li><li>Illuminazione ottimale</li><li>Scaldasciugamani elettrico</li>
         </ul>
       </div>
       <div class="servizio-col">
         <div class="servizio-col-header"><span class="servizio-icon">🔒</span><h3 class="servizio-col-title" data-it="Sicurezza" data-en="Safety" data-de="Sicherheit">Sicurezza</h3></div>
-        <ul>
+        <ul data-it="<li>Serratura di sicurezza</li><li>Estintore</li><li>Kit primo soccorso</li><li>Rilevatore di fumo</li><li>Videocitofono</li>"
+            data-en="<li>Security lock</li><li>Fire extinguisher</li><li>First aid kit</li><li>Smoke detector</li><li>Video intercom</li>"
+            data-de="<li>Sicherheitsschloss</li><li>Feuerlöscher</li><li>Erste-Hilfe-Set</li><li>Rauchmelder</li><li>Videogegensprechanlage</li>">
           <li>Serratura di sicurezza</li><li>Estintore</li>
           <li>Kit primo soccorso</li><li>Rilevatore di fumo</li><li>Videocitofono</li>
         </ul>
       </div>
       <div class="servizio-col">
         <div class="servizio-col-header"><span class="servizio-icon">💻</span><h3 class="servizio-col-title" data-it="Lavoro e svago" data-en="Work &amp; leisure" data-de="Arbeit &amp; Freizeit">Lavoro e svago</h3></div>
-        <ul>
+        <ul data-it="<li>Wi-Fi veloce incluso</li><li>Smart TV in ogni stanza</li><li>Scrivania</li><li>Prese comode</li><li>Balcone privato</li><li>Carte da gioco</li><li>Libri da lettura</li>"
+            data-en="<li>Fast Wi-Fi included</li><li>Smart TV in every room</li><li>Desk</li><li>Convenient power sockets</li><li>Private balcony</li><li>Playing cards</li><li>Reading books</li>"
+            data-de="<li>Schnelles WLAN inklusive</li><li>Smart-TV in jedem Zimmer</li><li>Schreibtisch</li><li>Praktische Steckdosen</li><li>Privater Balkon</li><li>Spielkarten</li><li>Lesebücher</li>">
           <li>Wi-Fi veloce incluso</li><li>Smart TV in ogni stanza</li><li>Scrivania</li>
           <li>Prese comode</li><li>Balcone privato</li>
           <li>Carte da gioco</li><li>Libri da lettura</li>
@@ -409,7 +462,9 @@ ul{list-style:none}
       </div>
       <div class="servizio-col">
         <div class="servizio-col-header"><span class="servizio-icon">🍳</span><h3 class="servizio-col-title" data-it="Cucina" data-en="Kitchen" data-de="Küche">Cucina</h3></div>
-        <ul>
+        <ul data-it="<li>Cucina completamente attrezzata</li><li>Frigorifero con freezer</li><li>Piano a induzione</li><li>Forno</li><li>Microonde</li><li>Macchina del caffè Nespresso con cialde</li><li>Moka e bollitore</li><li>Tostapane</li><li>Stoviglie complete</li><li>Lavastoviglie</li><li>Lavatrice</li>"
+            data-en="<li>Fully equipped kitchen</li><li>Fridge with freezer</li><li>Induction hob</li><li>Oven</li><li>Microwave</li><li>Nespresso coffee machine with pods</li><li>Moka pot and kettle</li><li>Toaster</li><li>Full set of crockery</li><li>Dishwasher</li><li>Washing machine</li>"
+            data-de="<li>Vollausgestattete Küche</li><li>Kühlschrank mit Gefrierfach</li><li>Induktionsherd</li><li>Backofen</li><li>Mikrowelle</li><li>Nespresso-Kaffeemaschine mit Kapseln</li><li>Mokakanne und Wasserkocher</li><li>Toaster</li><li>Vollständiges Geschirr</li><li>Geschirrspüler</li><li>Waschmaschine</li>">
           <li>Cucina completamente attrezzata</li><li>Frigorifero con freezer</li><li>Piano a induzione</li>
           <li>Forno</li><li>Microonde</li><li>Macchina del caff&egrave; Nespresso con cialde</li>
           <li>Moka e bollitore</li><li>Tostapane</li><li>Stoviglie complete</li>
@@ -418,7 +473,9 @@ ul{list-style:none}
       </div>
       <div class="servizio-col">
         <div class="servizio-col-header"><span class="servizio-icon">✨</span><h3 class="servizio-col-title" data-it="Altri servizi" data-en="Other amenities" data-de="Weitere Ausstattung">Altri servizi</h3></div>
-        <ul>
+        <ul data-it="<li>Climatizzatore estate/inverno</li><li>Ventilazione forzata</li><li>Persiane elettriche</li><li>Parcheggio riservato nel cortile</li><li>Pulizia finale inclusa</li><li>Kit da cucito</li><li>Aspirapolvere</li><li>Ferro da stiro e tavolo da stiro</li>"
+            data-en="<li>Summer/winter air conditioning</li><li>Forced ventilation</li><li>Electric shutters</li><li>Private parking in courtyard</li><li>Final cleaning included</li><li>Sewing kit</li><li>Vacuum cleaner</li><li>Iron and ironing board</li>"
+            data-de="<li>Sommer/Winter-Klimaanlage</li><li>Zwangsbelüftung</li><li>Elektrische Rollläden</li><li>Reservierter Parkplatz im Hof</li><li>Endreinigung inklusive</li><li>Nähset</li><li>Staubsauger</li><li>Bügeleisen und Bügelbrett</li>">
           <li>Climatizzatore estate/inverno</li><li>Ventilazione forzata</li><li>Persiane elettriche</li>
           <li>Parcheggio riservato nel cortile</li><li>Pulizia finale inclusa</li><li>Kit da cucito</li>
           <li>Aspirapolvere</li><li>Ferro da stiro e tavolo da stiro</li>
@@ -439,18 +496,18 @@ ul{list-style:none}
     <div class="score-cards">
       <div class="score-card">
         <div class="score-card-icon">⭐</div>
-        <h3>Soggiorno eccellente</h3>
-        <p>Il 100% degli ospiti ha assegnato il punteggio massimo al soggiorno complessivo.</p>
+        <h3 data-it="Soggiorno eccellente" data-en="Outstanding stay" data-de="Hervorragender Aufenthalt">Soggiorno eccellente</h3>
+        <p data-it="Il 100% degli ospiti ha assegnato il punteggio massimo al soggiorno complessivo." data-en="100% of guests gave the highest score for the overall stay." data-de="100 % der Gäste vergaben die Höchstnote für den Gesamtaufenthalt.">Il 100% degli ospiti ha assegnato il punteggio massimo al soggiorno complessivo.</p>
       </div>
       <div class="score-card">
         <div class="score-card-icon">💬</div>
-        <h3>Comunicazione perfetta</h3>
-        <p>Monica risponde sempre in modo rapido e cortese, prima, durante e dopo il soggiorno.</p>
+        <h3 data-it="Comunicazione perfetta" data-en="Flawless communication" data-de="Perfekte Kommunikation">Comunicazione perfetta</h3>
+        <p data-it="Monica risponde sempre in modo rapido e cortese, prima, durante e dopo il soggiorno." data-en="Monica always replies promptly and warmly, before, during and after the stay." data-de="Monica antwortet stets schnell und freundlich, vor, während und nach dem Aufenthalt.">Monica risponde sempre in modo rapido e cortese, prima, durante e dopo il soggiorno.</p>
       </div>
       <div class="score-card">
         <div class="score-card-icon">📍</div>
-        <h3>Posizione strategica</h3>
-        <p>650 m dal mare, 100 m dalla stazione: tutti valutano la posizione come ideale.</p>
+        <h3 data-it="Posizione strategica" data-en="Perfect location" data-de="Ideale Lage">Posizione strategica</h3>
+        <p data-it="650 m dal mare, 100 m dalla stazione: tutti valutano la posizione come ideale." data-en="650 m from the sea, 100 m from the station: every guest rates the location as ideal." data-de="650 m vom Meer, 100 m vom Bahnhof: Alle Gäste bewerten die Lage als ideal.">650 m dal mare, 100 m dalla stazione: tutti valutano la posizione come ideale.</p>
       </div>
     </div>
   </div>
@@ -460,38 +517,41 @@ ul{list-style:none}
   <div class="reviews-inner">
     <div class="reviews-head">
       <p class="section-tag" data-it="Alcune recensioni da Booking" data-en="Some reviews from Booking" data-de="Einige Bewertungen von Booking">Alcune recensioni da Booking</p>
-      <h2 class="section-heading" style="font-family:var(--serif);font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:400;line-height:1.2;color:var(--ink);margin-top:10px;">Cosa dicono gli ospiti di Ricky's Luxury Apartment</h2>
+      <h2 class="section-heading" style="font-family:var(--serif);font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:400;line-height:1.2;color:var(--ink);margin-top:10px;"
+          data-it="Cosa dicono gli ospiti di Ricky's Luxury Apartment"
+          data-en="What guests say about Ricky's Luxury Apartment"
+          data-de="Was Gäste über Ricky's Luxury Apartment sagen">Cosa dicono gli ospiti di Ricky's Luxury Apartment</h2>
     </div>
     <div class="reviews-grid">
       <div class="review-card">
         <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733; &nbsp; 10/10</div>
         <p class="review-text">&ldquo;Appartamento fantastico, pulitissimo e ben attrezzato. Monica &egrave; stata disponibile e gentile fin dal primo contatto. Lo riprenoterei senza dubbi.&rdquo;</p>
-        <p class="review-author">Roberto<span class="review-date">&middot; Estate 2024</span></p>
+        <p class="review-author">Roberto<span class="review-date" data-it="&middot; Estate 2024" data-en="&middot; Summer 2024" data-de="&middot; Sommer 2024">&middot; Estate 2024</span></p>
       </div>
       <div class="review-card">
         <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733; &nbsp; 10/10</div>
         <p class="review-text">&ldquo;Posizione perfetta: in pochi minuti a piedi si raggiunge il mare, i ristoranti e il centro. L'appartamento &egrave; esattamente come nelle foto, curato nei minimi dettagli.&rdquo;</p>
-        <p class="review-author">Daniele<span class="review-date">&middot; Luglio 2024</span></p>
+        <p class="review-author">Daniele<span class="review-date" data-it="&middot; Luglio 2024" data-en="&middot; July 2024" data-de="&middot; Juli 2024">&middot; Luglio 2024</span></p>
       </div>
       <div class="review-card">
         <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733; &nbsp; 10/10</div>
         <p class="review-text">&ldquo;We absolutely loved it! The apartment is beautiful, spotless and very comfortable. Monica was incredibly helpful. We will definitely be back next summer.&rdquo;</p>
-        <p class="review-author">Di<span class="review-date">&middot; Agosto 2024</span></p>
+        <p class="review-author">Di<span class="review-date" data-it="&middot; Agosto 2024" data-en="&middot; August 2024" data-de="&middot; August 2024">&middot; Agosto 2024</span></p>
       </div>
       <div class="review-card">
         <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733; &nbsp; 10/10</div>
         <p class="review-text">&ldquo;Tutto perfetto. Abbiamo soggiornato una settimana e siamo rimasti colpiti dalla cura degli spazi e dalla cortesia di Monica. Misano &egrave; bellissima, torneremo.&rdquo;</p>
-        <p class="review-author">Mattia<span class="review-date">&middot; Giugno 2024</span></p>
+        <p class="review-author">Mattia<span class="review-date" data-it="&middot; Giugno 2024" data-en="&middot; June 2024" data-de="&middot; Juni 2024">&middot; Giugno 2024</span></p>
       </div>
       <div class="review-card">
         <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733; &nbsp; 10/10</div>
         <p class="review-text">&ldquo;Appartamento di alto livello in una posizione comoda. Nessuna sorpresa rispetto all'annuncio: tutto corrispondeva perfettamente. Comunicazione rapida e puntuale.&rdquo;</p>
-        <p class="review-author">Carrera<span class="review-date">&middot; Settembre 2024</span></p>
+        <p class="review-author">Carrera<span class="review-date" data-it="&middot; Settembre 2024" data-en="&middot; September 2024" data-de="&middot; September 2024">&middot; Settembre 2024</span></p>
       </div>
       <div class="review-card">
         <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733; &nbsp; 10/10</div>
         <p class="review-text">&ldquo;L&rsquo;appartamento &egrave; molto ben posizionato. &Egrave; dotato di tutto il necessario per un soggiorno piacevole e senza problemi. L&rsquo;host &egrave; molto gentile e disponibile. Ci torneremo pi&ugrave; avanti!&rdquo;</p>
-        <p class="review-author">Alexandrina<span class="review-flag">&nbsp;&#127467;&#127479; Francia</span><span class="review-date">&middot; Booking.com</span></p>
+        <p class="review-author">Alexandrina<span class="review-flag" data-it="&nbsp;&#127467;&#127479; Francia" data-en="&nbsp;&#127467;&#127479; France" data-de="&nbsp;&#127467;&#127479; Frankreich">&nbsp;&#127467;&#127479; Francia</span><span class="review-date">&middot; Booking.com</span></p>
       </div>
     </div>
     <div style="text-align:center;margin-top:48px;">
@@ -523,9 +583,9 @@ ul{list-style:none}
       <button class="accordion-trigger" aria-expanded="false" data-it="Letti e bambini" data-en="Beds &amp; children" data-de="Betten &amp; Kinder">Letti e bambini<span class="acc-icon">+</span></button>
       <div class="accordion-body" data-it="L'appartamento &egrave; adatto a famiglie con bambini. Il numero massimo di ospiti &egrave; 5. Per bambini piccoli &egrave; possibile richiedere un lettino aggiuntivo (su richiesta). Si prega di comunicare la composizione del gruppo al momento della prenotazione." data-en="The apartment is suitable for families with children. The maximum number of guests is 5. For small children, an additional cot can be requested (on request). Please inform us of the group composition at the time of booking." data-de="Die Wohnung ist f&uuml;r Familien mit Kindern geeignet. Die maximale G&auml;stezahl betr&auml;gt 5. F&uuml;r Kleinkinder kann auf Anfrage ein zus&auml;tzliches Kinderbett bereitgestellt werden. Bitte teilen Sie uns die Gruppenzusammensetzung bei der Buchung mit."></div>
     </div>
-    <div class=" data-de="Die Wohnung eignet sich für Familien mit Kindern. Die maximale Anzahl von Gästen beträgt 4/5 Personen. Für Kleinkinder ist auf Anfrage ein Babybett erhältlich. Bitte teilen Sie uns bei der Buchung die Zusammensetzung Ihrer Gruppe mit."accordion-item">
+    <div class="accordion-item">
       <button class="accordion-trigger" aria-expanded="false" data-it="Divieti e animali domestici" data-en="Rules &amp; pets" data-de="Regeln &amp; Haustiere">Divieti e animali domestici<span class="acc-icon">+</span></button>
-      <div class="accordion-body">Non &egrave; consentito fumare all'interno dell'appartamento. Gli animali domestici non sono ammessi. Sono vietate feste o eventi. Si prega di rispettare il silenzio dopo le 22:00 per non disturbare i vicini.</div>
+      <div class="accordion-body" data-it="Non è consentito fumare all'interno dell'appartamento. Gli animali domestici non sono ammessi. Sono vietate feste o eventi. Si prega di rispettare il silenzio dopo le 22:00 per non disturbare i vicini." data-en="Smoking is not permitted inside the apartment. Pets are not allowed. Parties or events are prohibited. Please observe quiet hours after 10:00 PM so as not to disturb the neighbours." data-de="Das Rauchen in der Wohnung ist nicht gestattet. Haustiere sind nicht erlaubt. Partys oder Veranstaltungen sind verboten. Bitte halten Sie nach 22:00 Uhr Ruhe, um die Nachbarn nicht zu stören.">Non &egrave; consentito fumare all'interno dell'appartamento. Gli animali domestici non sono ammessi. Sono vietate feste o eventi. Si prega di rispettare il silenzio dopo le 22:00 per non disturbare i vicini.</div>
     </div>
     <div class="accordion-item">
       <button class="accordion-trigger" aria-expanded="false" data-it="Prima della partenza" data-en="Before departure" data-de="Vor der Abreise">Prima della partenza<span class="acc-icon">+</span></button>
@@ -533,7 +593,7 @@ ul{list-style:none}
     </div>
     <div class="accordion-item">
       <button class="accordion-trigger" aria-expanded="false" data-it="Regole aggiuntive" data-en="Additional rules" data-de="Zusätzliche Regeln">Regole aggiuntive<span class="acc-icon">+</span></button>
-      <div class="accordion-body">Gli ospiti sono responsabili dei danni causati durante il soggiorno. Si prega di trattare la struttura con cura. CIN IT099005C2XKAXD7OF. Per qualsiasi necessit&agrave; o emergenza, Monica &egrave; sempre raggiungibile via WhatsApp.</div>
+      <div class="accordion-body" data-it="Gli ospiti sono responsabili dei danni causati durante il soggiorno. Si prega di trattare la struttura con cura. CIN IT099005C2XKAXD7OF. Per qualsiasi necessità o emergenza, Monica è sempre raggiungibile via WhatsApp." data-en="Guests are responsible for any damage caused during their stay. Please treat the property with care. CIN IT099005C2XKAXD7OF. For any need or emergency, Monica is always reachable via WhatsApp." data-de="Die Gäste haften für während des Aufenthalts verursachte Schäden. Bitte gehen Sie sorgfältig mit der Unterkunft um. CIN IT099005C2XKAXD7OF. Bei Bedarf oder in Notfällen ist Monica jederzeit per WhatsApp erreichbar.">Gli ospiti sono responsabili dei danni causati durante il soggiorno. Si prega di trattare la struttura con cura. CIN IT099005C2XKAXD7OF. Per qualsiasi necessit&agrave; o emergenza, Monica &egrave; sempre raggiungibile via WhatsApp.</div>
     </div>
   </div>
 </section>
@@ -541,7 +601,7 @@ ul{list-style:none}
   <div class="prenota-inner">
     <div class="prenota-head">
       <p class="section-tag" data-it="Richiesta di disponibilit&agrave;" data-en="Availability request" data-de="Verfügbarkeitsanfrage">Richiesta di disponibilit&agrave;</p>
-      <h2 class="prenota-heading" data-it="Prenota il tuo soggiorno" data-en="Book your stay" data-de="Ihren Aufenthalt buchen">Prenota il tuo soggiorno</h2>
+      <h2 class="prenota-heading" data-it="Richiedi disponibilità" data-en="Check availability" data-de="Verfügbarkeit prüfen">Richiedi disponibilità</h2>
       <p class="prenota-sub" data-it="Compila il modulo e Monica ti risponder&agrave; entro poche ore per confermare la disponibilit&agrave; e i dettagli del soggiorno." data-en="Fill in the form and Monica will reply within a few hours to confirm availability and booking details." data-de="Füllen Sie das Formular aus und Monica antwortet Ihnen innerhalb weniger Stunden, um die Verfügbarkeit und Details Ihres Aufenthalts zu bestätigen.">Compila il modulo e Monica ti risponder&agrave; entro poche ore per confermare la disponibilit&agrave; e i dettagli del soggiorno.</p>
     </div>
     <form class="prenota-form" action="https://formspree.io/f/xrppbdel" method="POST">
@@ -564,7 +624,7 @@ ul{list-style:none}
         </div>
         <div class="prenota-field">
           <label data-it="Numero di ospiti" data-en="Number of guests" data-de="Anzahl der Gäste">Numero di ospiti</label>
-          <select name="ospiti">
+          <select name="ospiti" required>
             <option value="" data-it="Seleziona" data-en="Select" data-de="Auswählen">Seleziona</option>
             <option data-it="1 ospite" data-en="1 guest" data-de="1 Gast">1 ospite</option>
             <option data-it="2 ospiti" data-en="2 guests" data-de="2 Gäste">2 ospiti</option>
@@ -577,11 +637,12 @@ ul{list-style:none}
       <div class="prenota-row">
         <div class="prenota-field">
           <label data-it="Data di arrivo" data-en="Arrival date" data-de="Anreisedatum">Data di arrivo</label>
-          <input type="date" name="arrivo" required>
+          <input type="date" name="arrivo" id="inputArrivo" required>
         </div>
         <div class="prenota-field">
           <label data-it="Data di partenza" data-en="Departure date" data-de="Abreisedatum">Data di partenza</label>
-          <input type="date" name="partenza" required>
+          <input type="date" name="partenza" id="inputPartenza" required>
+          <span id="dateError" style="display:none;color:#c0392b;font-size:.78rem;margin-top:4px;" data-it="La data di partenza deve essere successiva all'arrivo." data-en="Departure date must be after the arrival date." data-de="Das Abreisedatum muss nach dem Anreisedatum liegen.">La data di partenza deve essere successiva all'arrivo.</span>
         </div>
       </div>
       <div class="prenota-field prenota-field--full">
@@ -598,6 +659,12 @@ ul{list-style:none}
         <button type="submit" class="prenota-btn" data-it="Invia richiesta" data-en="Send request" data-de="Anfrage senden">Invia richiesta</button>
         <a href="https://wa.me/393406431809" target="_blank" class="prenota-btn" style="display:inline-block;text-decoration:none;background:transparent;border:2px solid var(--gold);color:var(--gold);margin-left:12px;">💬 Scrivici su WhatsApp</a>
       </div>
+      <p style="margin-top:20px;text-align:center;font-size:.78rem;color:var(--mid);font-style:italic;"
+         data-it="La richiesta non costituisce una prenotazione confermata. Monica risponderà per verificare la disponibilità e concordare i dettagli."
+         data-en="This enquiry does not constitute a confirmed booking. Monica will reply to verify availability and arrange the details."
+         data-de="Diese Anfrage stellt keine bestätigte Buchung dar. Monica wird antworten, um die Verfügbarkeit zu prüfen und die Details zu vereinbaren.">
+        La richiesta non costituisce una prenotazione confermata. Monica risponderà per verificare la disponibilità e concordare i dettagli.
+      </p>
     </form>
   </div>
 </section>
@@ -713,8 +780,9 @@ ul{list-style:none}
     <span style="display:block;margin-bottom:4px;font-family:var(--serif);font-size:1rem;color:var(--ink);">Ricky's Luxury Apartment</span>
     <span style="color:var(--mid);font-size:.82rem;letter-spacing:.04em;display:block;margin-bottom:6px;" data-it="Appartamento turistico Misano Adriatico" data-en="Tourist apartment Misano Adriatico" data-de="Ferienwohnung Misano Adriatico">Appartamento turistico Misano Adriatico</span>
     <span style="color:var(--mid);font-size:.78rem;letter-spacing:.06em;">CIN IT099005C2XKAXD7OF</span>
-    <span style="display:block;margin-top:10px;">
+    <span style="display:block;margin-top:10px;display:flex;justify-content:center;gap:20px;flex-wrap:wrap;">
       <button onclick="document.getElementById('privacyModal').style.display='flex'" style="background:none;border:none;color:var(--gold);font-size:.78rem;letter-spacing:.06em;cursor:pointer;text-decoration:underline;padding:0;" data-it="Privacy Policy" data-en="Privacy Policy" data-de="Datenschutzerklärung">Privacy Policy</button>
+      <button id="cookiePrefBtn" style="background:none;border:none;color:var(--gold);font-size:.78rem;letter-spacing:.06em;cursor:pointer;text-decoration:underline;padding:0;" data-it="Preferenze cookie" data-en="Cookie preferences" data-de="Cookie-Einstellungen">Preferenze cookie</button>
     </span>
   </div>
 </footer>
@@ -749,6 +817,12 @@ ul{list-style:none}
          data-en="<strong>Rights of the data subject</strong><br>You have the right to access, rectify, delete or request the portability of your data, as well as to withdraw consent at any time by writing to: <a href='mailto:info@rickysluxuryapartment.it' style='color:var(--gold)'>info@rickysluxuryapartment.it</a>"
          data-de="<strong>Rechte der betroffenen Person</strong><br>Sie haben das Recht, auf Ihre Daten zuzugreifen, diese zu berichtigen, zu löschen oder deren Übertragung zu verlangen sowie jederzeit die Einwilligung zu widerrufen, indem Sie schreiben an: <a href='mailto:info@rickysluxuryapartment.it' style='color:var(--gold)'>info@rickysluxuryapartment.it</a>">
         <strong>Diritti dell'interessato</strong><br>Hai il diritto di accedere ai tuoi dati, rettificarli, cancellarli o richiederne la portabilità, nonché di revocare il consenso in qualsiasi momento, scrivendo a: <a href="mailto:info@rickysluxuryapartment.it" style="color:var(--gold)">info@rickysluxuryapartment.it</a>
+      </p>
+      <p style="margin-top:16px;"
+         data-it="<strong>Cookie e strumenti di analisi</strong><br>Questo sito utilizza Google Analytics 4 (Google LLC, USA) esclusivamente previo consenso esplicito dell'utente, espresso tramite il banner cookie. Google Analytics raccoglie dati di navigazione (pagine visitate, durata della sessione, paese di provenienza, dispositivo utilizzato) associati a cookie identificativi memorizzati nel browser. I dati vengono trasferiti e trattati da Google LLC, anche negli USA, in conformità al GDPR e alle clausole contrattuali standard. L'utente può revocare il consenso in qualsiasi momento tramite il link «Preferenze cookie» in fondo alla pagina: il tracciamento viene interrotto immediatamente e i cookie GA vengono rimossi. Per maggiori informazioni: <a href='https://policies.google.com/privacy' target='_blank' style='color:var(--gold)'>policies.google.com/privacy</a>"
+         data-en="<strong>Cookies and analytics tools</strong><br>This site uses Google Analytics 4 (Google LLC, USA) exclusively upon the user's explicit consent, given through the cookie banner. Google Analytics collects browsing data (pages visited, session duration, country of origin, device used) associated with identifying cookies stored in the browser. Data is transferred to and processed by Google LLC, including in the USA, in compliance with GDPR and standard contractual clauses. The user may withdraw consent at any time via the 'Cookie preferences' link at the bottom of the page: tracking is stopped immediately and GA cookies are removed. For more information: <a href='https://policies.google.com/privacy' target='_blank' style='color:var(--gold)'>policies.google.com/privacy</a>"
+         data-de="<strong>Cookies und Analysetools</strong><br>Diese Website verwendet Google Analytics 4 (Google LLC, USA) ausschließlich mit ausdrücklicher Zustimmung des Nutzers, die über das Cookie-Banner erteilt wird. Google Analytics erfasst Navigationsdaten (besuchte Seiten, Sitzungsdauer, Herkunftsland, verwendetes Gerät), die mit im Browser gespeicherten Identifikations-Cookies verknüpft sind. Die Daten werden von Google LLC, auch in den USA, gemäß DSGVO und Standardvertragsklauseln verarbeitet. Der Nutzer kann die Einwilligung jederzeit über den Link «Cookie-Einstellungen» am Ende der Seite widerrufen: Das Tracking wird sofort gestoppt und die GA-Cookies werden entfernt. Weitere Informationen: <a href='https://policies.google.com/privacy' target='_blank' style='color:var(--gold)'>policies.google.com/privacy</a>">
+        <strong>Cookie e strumenti di analisi</strong><br>Questo sito utilizza Google Analytics 4 (Google LLC, USA) esclusivamente previo consenso esplicito dell'utente, espresso tramite il banner cookie. Google Analytics raccoglie dati di navigazione (pagine visitate, durata della sessione, paese di provenienza, dispositivo utilizzato) associati a cookie identificativi memorizzati nel browser. I dati vengono trasferiti e trattati da Google LLC, anche negli USA, in conformità al GDPR e alle clausole contrattuali standard. L'utente può revocare il consenso in qualsiasi momento tramite il link «Preferenze cookie» in fondo alla pagina: il tracciamento viene interrotto immediatamente e i cookie GA vengono rimossi. Per maggiori informazioni: <a href="https://policies.google.com/privacy" target="_blank" style="color:var(--gold)">policies.google.com/privacy</a>
       </p>
       <p style="margin-top:16px;font-size:.8rem;color:var(--mid);" data-it="Ultimo aggiornamento: ottobre 2026" data-en="Last updated: October 2026" data-de="Zuletzt aktualisiert: Oktober 2026">Ultimo aggiornamento: ottobre 2026</p>
     </div>
@@ -875,6 +949,115 @@ document.addEventListener('DOMContentLoaded', () => {
   const saved = localStorage.getItem('rla_lang') || 'it';
   setLang(saved);
 });
+</script>
+<!-- Banner consenso cookie GDPR -->
+<div id="cookieBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#1a1a1a;color:#e8e0d4;padding:20px 28px;box-shadow:0 -4px 24px rgba(0,0,0,.35);font-family:'Cormorant Garamond',Georgia,serif;">
+  <div style="max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:16px;">
+    <p style="flex:1 1 320px;font-size:.88rem;line-height:1.6;margin:0;color:#c8bfb0;">
+      <span data-it="Questo sito utilizza cookie analitici (Google Analytics) per misurare le visite, previo tuo consenso. Nessun dato viene raccolto senza la tua approvazione."
+            data-en="This site uses analytical cookies (Google Analytics) to measure visits, subject to your consent. No data is collected without your approval."
+            data-de="Diese Website verwendet Analyse-Cookies (Google Analytics) zur Messung der Besuche, vorbehaltlich Ihrer Zustimmung. Ohne Ihre Genehmigung werden keine Daten gesammelt.">
+        Questo sito utilizza cookie analitici (Google Analytics) per misurare le visite, previo tuo consenso. Nessun dato viene raccolto senza la tua approvazione.
+      </span>
+      <button onclick="document.getElementById('privacyModal').style.display='flex'" style="background:none;border:none;color:#c9a84c;cursor:pointer;font-family:inherit;font-size:.88rem;text-decoration:underline;padding:0;margin-left:4px;" data-it="Maggiori informazioni" data-en="More information" data-de="Weitere Informationen">Maggiori informazioni</button>
+    </p>
+    <div style="display:flex;gap:10px;flex-shrink:0;">
+      <button id="cookieDecline" style="background:none;border:1px solid #666;color:#c8bfb0;padding:9px 20px;cursor:pointer;font-family:inherit;font-size:.82rem;letter-spacing:.06em;border-radius:1px;transition:border-color .2s;"
+        data-it="Rifiuta" data-en="Decline" data-de="Ablehnen">Rifiuta</button>
+      <button id="cookieAccept" style="background:#c9a84c;border:1px solid #c9a84c;color:#fff;padding:9px 24px;cursor:pointer;font-family:inherit;font-size:.82rem;letter-spacing:.06em;border-radius:1px;font-weight:600;transition:background .2s;"
+        data-it="Accetta" data-en="Accept" data-de="Akzeptieren">Accetta</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var banner = document.getElementById('cookieBanner');
+  var consent = localStorage.getItem('cookie_consent');
+  if(!consent) { banner.style.display = 'block'; }
+
+  document.getElementById('cookieAccept').addEventListener('click', function(){
+    localStorage.setItem('cookie_consent', 'accepted');
+    banner.style.display = 'none';
+    if(typeof loadGA === 'function') loadGA();
+  });
+
+  document.getElementById('cookieDecline').addEventListener('click', function(){
+    localStorage.setItem('cookie_consent', 'declined');
+    banner.style.display = 'none';
+    if(typeof revokeGA === 'function') revokeGA();
+  });
+
+  // Pulsante "Preferenze cookie" nel footer — riapre il banner
+  var prefBtn = document.getElementById('cookiePrefBtn');
+  if(prefBtn) {
+    prefBtn.addEventListener('click', function(){
+      localStorage.removeItem('cookie_consent');
+      if(typeof revokeGA === 'function') revokeGA();
+      banner.style.display = 'block';
+      window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+    });
+  }
+
+  // Aggiorna il banner quando cambia lingua — usa la stessa funzione setLang()
+  // Il banner contiene già attributi data-it/en/de: applyLang() li aggiorna automaticamente.
+  // Qui intercettiamo i click sui pulsanti lingua per sincronizzare il banner.
+  document.querySelectorAll('[id^="btn-"]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var lang = btn.id.replace('btn-','');
+      banner.querySelectorAll('[data-it]').forEach(function(el){
+        var val = el.getAttribute('data-'+lang) || el.getAttribute('data-it');
+        el.innerHTML = val;
+      });
+    });
+  });
+})();
+
+// Validazione date: partenza deve essere successiva all'arrivo
+(function(){
+  var arrivo   = document.getElementById('inputArrivo');
+  var partenza = document.getElementById('inputPartenza');
+  var errMsg   = document.getElementById('dateError');
+  if(!arrivo || !partenza || !errMsg) return;
+
+  function validateDates() {
+    if(arrivo.value && partenza.value && partenza.value <= arrivo.value) {
+      errMsg.style.display = 'block';
+      partenza.setCustomValidity('invalid');
+    } else {
+      errMsg.style.display = 'none';
+      partenza.setCustomValidity('');
+    }
+  }
+
+  arrivo.addEventListener('change', function(){
+    // Se la partenza è già impostata e non è più valida, segnala subito
+    if(partenza.value) validateDates();
+    // Imposta il minimo della partenza al giorno successivo all'arrivo
+    if(arrivo.value) {
+      var minDep = new Date(arrivo.value);
+      minDep.setDate(minDep.getDate() + 1);
+      var yyyy = minDep.getFullYear();
+      var mm   = String(minDep.getMonth()+1).padStart(2,'0');
+      var dd   = String(minDep.getDate()).padStart(2,'0');
+      partenza.min = yyyy+'-'+mm+'-'+dd;
+    }
+  });
+  partenza.addEventListener('change', validateDates);
+
+  // Blocca submit se le date non sono valide
+  var form = arrivo.closest('form');
+  if(form) {
+    form.addEventListener('submit', function(e){
+      validateDates();
+      if(partenza.validity.customError) {
+        e.preventDefault();
+        errMsg.style.display = 'block';
+        partenza.focus();
+      }
+    });
+  }
+})();
 </script>
 </body>
 </html>
